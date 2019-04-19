@@ -57,7 +57,7 @@ class Grid {
           }
           if (this.showText) {
             fill(0);
-            text(item.id, xPos + this.size / 2, yPos + this.size / 2);
+            text(item.density, xPos + this.size / 2, yPos + this.size / 2);
           }
         }
       }
@@ -135,6 +135,10 @@ class AgentBrain extends ObjectInfo {
   constructor(x, y) {
     super(x, y);
     this.typeName = 'agent';
+    console.log('density:',theWorld.data[x][y].density);
+    if(theWorld.data[x][y].type.length>1){
+    console.log('found type:',theWorld.data[x][y].type.find(e=>e.typeName!='path').typeName)
+    }
   }
 } //AgentBrain
 
