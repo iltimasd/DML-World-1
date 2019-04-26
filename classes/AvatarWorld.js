@@ -1,4 +1,4 @@
- /* Developing version of AvatarWorld 
+/* Developing version of AvatarWorld 
 
 Stuff is are shades of yellow (unknown stuff is still stuff, tools are stuff) 
 Avatars are shades of cyan
@@ -57,7 +57,7 @@ class Grid {
           }
           if (this.showText) {
             fill(0);
-            text(item.id, xPos + this.size / 2, yPos + this.size / 2);
+            text(item.density, xPos + this.size / 2, yPos + this.size / 2);
           }
         }
       }
@@ -74,8 +74,6 @@ class Grid {
       if (type == 'agent') obj.type.push(new AgentBrain(x,y));
       else if (type =='thing') obj.type.push(new StuffInfo(x,y));
       else if (type == 'wall') obj.type.push(new WallInfo(x,y));
-      else if (type == 'tool') { print("In tool"); obj.type.push(new ToolInfo       (x,y));}
-    // else if (type == 'poison') obj.type.push(new PoisonInfo (x,y));
       else console.log(type + " type not recognized, not added!");
 
     } else console.log("Position exceeds grid size"); // this needs to be a try catch.
@@ -137,9 +135,12 @@ class AgentBrain extends ObjectInfo {
   constructor(x, y) {
     super(x, y);
     this.typeName = 'agent';
+    console.log('density:',theWorld.data[x][y].density);
+    if(theWorld.data[x][y].type.length>1){
+    console.log('found type:',theWorld.data[x][y].type.find(e=>e.typeName!='path').typeName)
+    }
   }
 } //AgentBrain
-
 
 class StuffInfo extends ObjectInfo {
   constructor(x, y) {
@@ -153,20 +154,4 @@ class WallInfo extends ObjectInfo {
     super(x,y);
     this.typeName = 'wall';
   }
-} //Wall
-
- 
-  class ToolInfo extends ObjectInfo {
-    constructor(x,y) {
-      super (x,y);
-      this.typeName = 'tool';
-      }
-    }
- /* 
-  class PoisonInfo extends ObjectInfo {
-  
-
-
-
-*/
-  
+} // Wall 
