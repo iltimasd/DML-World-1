@@ -1,32 +1,32 @@
 /*  This forms the bare bones of the Avatar World.
-Your assignment is sketched in the April 19 web page of
-the class website: 
-https://sites.google.com/a/newschool.edu/lcst2810-s19/weekly-note/week-13-april-19
-
-Before launching into the actual assignment, duplicate this project, 
-and with a partner, explore how it works. Comment the code!
-Answer these questions, and any others that emerge:
-
-1) Where is the avatar and where is the food?
-2) How are the colors and text turned on and off?
-3) The library AvatarWorld contains class definition outlines for:
-Agent
-Thing
-Wall
-Scent
-
-Which ones are fully implemented and which ones must you flesh out?
-4) How can you identify the type of an object?
-5) Which objects are 'solid' and which ones are 'ephemeral' - what does density do? 
-(hint: you may need to research color a bit)
-6) The numbers on the grid are marginally helpful.  
-What woud you need to change to print the x,y coords instead?
-7) You will probably want to play with a bigger grid, practice that for a bit as well.
-8) Take notes on suggestions for improving the code, but do NOT CHANGE ANYCODE THAT IS MARKED as 'locked'.
-
-*/
-let gridWidth = 6;
-let gridHeight = 6;
+    Your assignment is sketched in the April 19 web page of
+    the class website: 
+    https://sites.google.com/a/newschool.edu/lcst2810-s19/weekly-note/week-13-april-19
+    
+    Before launching into the actual assignment, duplicate this project, 
+    and with a partner, explore how it works. Comment the code!
+    Answer these questions, and any others that emerge:
+    
+    1) Where is the avatar and where is the food?
+    2) How are the colors and text turned on and off?
+    3) The library AvatarWorld contains class definition outlines for:
+        Agent
+        Thing
+        Wall
+        Scent
+        
+        Which ones are fully implemented and which ones must you flesh out?
+    4) How can you identify the type of an object?
+    5) Which objects are 'solid' and which ones are 'ephemeral' - what does density do? 
+       (hint: you may need to research color a bit)
+    6) The numbers on the grid are marginally helpful.  
+       What woud you need to change to print the x,y coords instead?
+    7) You will probably want to play with a bigger grid, practice that for a bit as well.
+    8) Take notes on suggestions for improving the code, but do NOT CHANGE ANYCODE THAT IS MARKED as 'locked'.
+    
+ */
+let gridWidth = 10;
+let gridHeight = 10;
 let tileSize = 50;
 let theWorld;
 
@@ -35,33 +35,65 @@ let showingObjects = true;
 let showingText = true;
 
 let avatar; // requires a physical space
+let foe;
 let food; // requires a physical space
-let levels = 3;  // warning for now, make this less than the width & height by 2  of the grid!
+let tool;
+let poison;
+let wall;
+let levels = 2;  // warning for now, make this less than the width & height by 2  of the grid!
 let density = 255;
 let densityReduction = density / (levels);
 
 let FOODCOLOR;
+let FOECOLOR;
 let AVATARCOLOR;
+let TOOLCOLOR;
+let POISONCOLOR;
+let WALLCOLOR;
 
 function setup() {
   createCanvas((gridWidth * tileSize) + 1, (gridHeight * tileSize) + 1);
   textSize(tileSize / 4);
   textAlign(CENTER, BASELINE);
   theWorld = new Grid(gridWidth, gridHeight, tileSize, [showingGrid, showingObjects, showingText]);
+
+
+    FOODCOLOR = color(255, 255, 0);
+    food = theWorld.addObject(5, 5, FOODCOLOR, "thing");
+
+    AVATARCOLOR = color(0, 255, 255);
+    avatar = theWorld.addObject(0, 0, AVATARCOLOR, "agent");
   
+    FOECOLOR= color (255, 200, 200)
+    foe = theWorld.addObject(9, 9, FOECOLOR, "foe");
   
-  FOODCOLOR = color('yellow');
-  food = theWorld.addObject(2, 3, FOODCOLOR, "thing");
+    TOOLCOLOR = color(255, 0, 255);
+    tool = theWorld.addObject( 2, 2, TOOLCOLOR, "tool");
+    tool = theWorld.addObject( 4, 9, TOOLCOLOR, "tool");
   
-  //color is currently statically added to each item, and does not update regardles of data contents
-  AVATARCOLOR = color('cyan');
-  avatar = theWorld.addObject(0, 0, AVATARCOLOR, "agent");
+    POISONCOLOR = color(255, 0, 0);
+    poison = theWorld.addObject( 5, 1, POISONCOLOR, "poison");
+    poison = theWorld.addObject( 2, 8, POISONCOLOR, "poison");
+   
+    WALLCOLOR= color (0);
+    wall = theWorld.addObject (1,1, WALLCOLOR, "wall");
+    wall = theWorld.addObject (2,1, WALLCOLOR, "wall");
+    wall = theWorld.addObject (1,2, WALLCOLOR, "wall");
+    wall = theWorld.addObject (7,7, WALLCOLOR, "wall");
+    wall = theWorld.addObject (7,8, WALLCOLOR, "wall");
+    wall = theWorld.addObject (8,7, WALLCOLOR, "wall");
+    wall = theWorld.addObject (7,6, WALLCOLOR, "wall");
   
   
   for (let i = 1; i < levels; i++) {
     density -= densityReduction;
     showScent(food, i, density);
   } 
+  
+  for (let i = 1; i < levels; i++) {
+    density -= densityReduction;
+    showScent(poison, i, density); 
+  }
   
   print(theWorld); // This is for debugging purposes
   //noLoop(); // will have to loop for keyboard stuff.
@@ -72,12 +104,18 @@ function setup() {
 function draw() {
   background(220);
   theWorld.drawContents();
+  /*avatar.checkCollison(food); 
+    avatar.checkCollison(tool);
+    avatar.checkCollison(poison);
+    avatar.checkCollison(scent);
+    print in console.log;
+  */
 } // draw
 
 // This code is LOCKED, post suggestions don't change. 
 function showScent(seed, level, density) {
-  /* THIS IS STILL BUGGY... fix later!
-  It breaks when the size of the grid is smaller than the scent level ! */
+/* THIS IS STILL BUGGY... fix later!
+   It breaks when the size of the grid is smaller than the scent level ! */
   let myColor = seed.myColor;
   // times = 2*level + 1
   yTop = seed.Y - level;
@@ -89,7 +127,7 @@ function showScent(seed, level, density) {
       if (yBottom < tileSize) makeScent(xPos, yBottom, density, myColor);
     }
   }
-  
+
   xLeft = seed.X - level;
   xRight = seed.X + level;
   // times = 2*level-1
@@ -104,12 +142,13 @@ function showScent(seed, level, density) {
 
 // This code is LOCKED, post suggestions don't change. 
 function makeScent(x, y, density, myColor) {
-  // print("In Scent: " + x + " " + y);
+// print("In Scent: " + x + " " + y);
   obj = theWorld.data[x][y];
   obj.density = density;
   obj.myColor = color(red(myColor), green(myColor), blue(myColor), density);
   obj.type.push(new Scent(x,y));
 } // makeScent
+
 
 //THIS MOVES TILE. DATA AND TILE ARE LINKED
 //WILL HAVE TO MOVE THE DATA, NOT TILE
